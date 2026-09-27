@@ -6,12 +6,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// روابط حلقاتك المرفوعة على Cloudflare (R2 أو الروابط المباشرة)
 const episodeUrls = {
+    "1": "https://pub-be8f46dfd2c64ae98fa1fd88caf49532.r2.dev/episodes/videoplayback%20(1).mp4",
     "2": "https://pub-be8f46dfd2c64ae98fa1fd88caf49532.r2.dev/episodes/videoplayback%20(1).mp4",
-    "3": "https://pub-be8f46dfd2c64ae98fa1fd88caf49532.r2.dev/episodes/videoplayback%20(1).mp4",
-    "4": "https://pub-be8f46dfd2c64ae98fa1fd88caf49532.r2.dev/episodes/videoplayback%20(1).mp4",
-    "5": "https://pub-be8f46dfd2c64ae98fa1fd88caf49532.r2.dev/episodes/videoplayback%20(1).mp4"
+    "3": "https://your-cloudflare-link.com/ep3.mp4",
+    "4": "https://your-cloudflare-link.com/ep4.mp4",
+    "5": "https://your-cloudflare-link.com/ep5.mp4"
 };
 
 app.post('/clip', (req, res) => {
@@ -20,7 +20,6 @@ app.post('/clip', (req, res) => {
 
     if (!videoUrl) return res.status(400).send("رقم الحلقة غير موجود");
 
-    // تحويل الأوقات إلى ثواني لحساب مدة القص
     const startSec = timeToSeconds(startTime);
     const endSec = timeToSeconds(endTime);
     const duration = endSec - startSec;
@@ -31,13 +30,15 @@ app.post('/clip', (req, res) => {
     res.setHeader('Content-Disposition', `attachment; filename="clip_ep${episode}.mp4"`);
     res.setHeader('Content-Type', 'video/mp4');
 
-    // المعالجة السريعة باستخدام Range Requests
     ffmpeg(videoUrl)
-        .seekInput(startTime) // السر هنا: يطلب تحميل المقطع من هذه النقطة فقط
-        .duration(duration)   // يحدد طول المقطع المطلوب
-        .outputOptions('-c copy') // قص مباشر بدون إعادة ترميز (سريع ولا يستهلك معالج)
+        .inputOptions([
+            '-user_agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        ])
+        .seekInput(startTime)
+        .duration(duration)
+        .outputOptions('-c copy')
         .format('mp4')
-        .outputOptions('-movflags frag_keyframe+empty_moov') // لدعم الإرسال كـ Stream
+        .outputOptions('-movflags frag_keyframe+empty_moov')
         .on('error', (err) => {
             console.error('FFmpeg Error:', err.message);
             if (!res.headersSent) res.status(500).send('حدث خطأ أثناء القص');
@@ -52,7 +53,6 @@ function timeToSeconds(timeStr) {
         : (parts[0] * 60) + parts[1];
 }
 
-// استخدام المنفذ الخاص بـ Cloud Run أو 8080
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
