@@ -11,7 +11,7 @@ const episodeUrls = {
     "2": "https://pub-be8f46dfd2c64ae98fa1fd88caf49532.r2.dev/episodes/videoplayback%20(1).mp4",
     "3": "https://pub-be8f46dfd2c64ae98fa1fd88caf49532.r2.dev/episodes/videoplayback%20(1).mp4",
     "4": "https://pub-be8f46dfd2c64ae98fa1fd88caf49532.r2.dev/episodes/videoplayback%20(1).mp4",
-    "5": "hhttps://pub-be8f46dfd2c64ae98fa1fd88caf49532.r2.dev/episodes/videoplayback%20(1).mp4"
+    "5": "https://pub-be8f46dfd2c64ae98fa1fd88caf49532.r2.dev/episodes/videoplayback%20(1).mp4"
 };
 
 app.post('/clip', (req, res) => {
