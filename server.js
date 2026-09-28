@@ -13,7 +13,8 @@ const episodeUrls = {
     "4": "https://your-cloudflare-link.com/ep4.mp4",
     "5": "https://your-cloudflare-link.com/ep5.mp4"
 };
-
+// بصمة للتأكد من أن الكود الجديد تم تحميله في السيرفر
+console.log("🔥 تم تحميل الكود الجديد بنجاح! رابط الحلقة 2 هو:", episodeUrls["2"]);
 app.post('/clip', (req, res) => {
     const { episode, startTime, endTime } = req.body;
     const videoUrl = episodeUrls[episode];
